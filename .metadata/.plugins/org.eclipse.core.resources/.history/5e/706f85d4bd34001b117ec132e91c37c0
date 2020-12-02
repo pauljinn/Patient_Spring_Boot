@@ -1,0 +1,5 @@
+package com.cg.patient.service;
+
+public class MapValidationErrorService {
+
+}

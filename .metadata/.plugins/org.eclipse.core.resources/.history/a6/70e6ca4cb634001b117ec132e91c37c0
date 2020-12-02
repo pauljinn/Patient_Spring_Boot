@@ -1,0 +1,5 @@
+package com.cg.patient.domain;
+
+public class Patient {
+
+}

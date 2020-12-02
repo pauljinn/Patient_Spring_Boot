@@ -1,0 +1,5 @@
+package com.cg.patient.repository;
+
+public class PatientRepository {
+
+}

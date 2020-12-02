@@ -1,0 +1,5 @@
+package com.cg.patient.exception;
+
+public class PatientExceptionResponse {
+
+}

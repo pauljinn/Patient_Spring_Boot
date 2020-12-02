@@ -1,0 +1,17 @@
+package com.cg.patient;
+
+import org.springframework.boot.SpringApplication;
+import java.util.regex.*;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PatientApplication {
+
+	public static void main(String[] args) {
+		//SpringApplication.run(PatientApplication.class, args);
+		Long phoneNumber = 6811982344L;
+		System.out.println(phoneNumber.toString().matches("[7-9][0-9]{9}"));
+		
+	}
+
+}
