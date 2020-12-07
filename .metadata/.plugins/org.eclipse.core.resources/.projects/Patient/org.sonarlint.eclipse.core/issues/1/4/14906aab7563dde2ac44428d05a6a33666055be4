@@ -1,7 +1,7 @@
 
-[
-java:S1452"&Remove usage of generic wildcard type.(‡Ù‰ã8¼†â¢â.HIRCRITICALZ
+‘
+java:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(–Ò‡áüÿÿÿÿ8¼†â¢â.H•RMINORZ
 CODE_SMELL
-
-java:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(–Ò‡áüÿÿÿÿ8¼†â¢â.HJRMINORZ
+\
+java:S1452"&Remove usage of generic wildcard type.(‡Ù‰ã8¼†â¢â.H”RCRITICALZ
 CODE_SMELL

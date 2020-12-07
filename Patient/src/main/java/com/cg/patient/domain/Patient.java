@@ -1,45 +1,58 @@
 package com.cg.patient.domain;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
+/**
+ * Patient POJO to carry the data related to patients.
+ * @author Aman Soni
+ *
+ */
 @Entity
 public class Patient {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long patientId;
 	
+	@Column(unique = true,updatable = false)
+	@NotBlank(message="Patient Identifier can't be blank")
+	@Size(min=4, max=5,message = "Size must be between 4 to 5 characters")
+	private String patientIdentifier;
+	
 	@NotBlank(message="Patient Name is requried")
 	private String patientName;
 	
-	@NotBlank(message="Patient Age is required")
+	@NotNull(message="Patient Age is required")
 	private int patientAge;
 	
-	@NotBlank(message="Phone number can't be blank")
-	@Pattern(regexp = "[7-9][0-9]{9}",message = "Phone number should have 10 digits and it should start with number 7,8 or 9")
+	@NotNull(message = "Phone number can't be blank")
 	private long phoneNumber;
 	
 	@NotBlank(message="Patient address can't be blank")
 	private String patientAddress;
 	
-	@NotBlank(message="Prescription can't be blank")
 	private String prescription;
 	
-	@NotBlank(message="Patient Identifier can't be blank")
-	@Size(min=4, max=5,message = "Size must be between 4 to 5 characters")
-	private String patientIdentifier;
+	private String medicalHistory;
+	
+	@ElementCollection
+	private Map<String,String> patientTestHistoryAndReportMap;
+	
+	
 	
 	/**
-	 * Parametrized Constructor.
+	 * Parameterized Constructor.
 	 * @param patientName
 	 * @param patientAge
 	 * @param phoneNumber
@@ -53,8 +66,29 @@ public class Patient {
 		this.patientAge = patientAge;
 		this.phoneNumber = phoneNumber;
 		this.patientAddress = patientAddress;
+		this.patientTestHistoryAndReportMap = new HashMap<>();
 	}
 	
+	
+	/**
+	 * Parameterized constructor to create a new patient on patientIdentifier,patient name, patientAge,phoneNumber and PatientAddress.
+	 * @param patientIdentifier
+	 * @param patientName
+	 * @param patientAge
+	 * @param phoneNumber
+	 * @param patientAddress
+	 */
+	public Patient(String patientIdentifier,String patientName,int patientAge,long phoneNumber,String patientAddress) {
+		super();
+		this.patientIdentifier = patientIdentifier;
+		this.patientName = patientName;
+		this.patientAge = patientAge;
+		this.phoneNumber = phoneNumber;
+		this.patientAddress = patientAddress;
+	}
+
+
+
 	public Patient() {
 		super();
 	}
@@ -162,6 +196,38 @@ public class Patient {
 	 */
 	public void setPatientIdentifier(String patientIdentifier) {
 		this.patientIdentifier = patientIdentifier;
+	}
+	
+	/**
+	 * 
+	 * @return the medical history of the patient.
+	 */
+	public String getMedicalHistory() {
+		return medicalHistory;
+	}
+	
+	/**
+	 * Set the medical history for the patient.
+	 * @param medicalHistory
+	 */
+	public void setMedicalHistory(String medicalHistory) {
+		this.medicalHistory = medicalHistory;
+	}
+	
+	/**
+	 * 
+	 * @return the patient test history and reports.
+	 */
+	public Map<String, String> getPatientTestHistoryAndReportMap() {
+		return patientTestHistoryAndReportMap;
+	}
+
+	/**
+	 * Set the patient test history and reports.
+	 * @param patientTestHistoryAndReportMap
+	 */
+	public void setPatientTestHistoryAndReportMap(Map<String, String> patientTestHistoryAndReportMap) {
+		this.patientTestHistoryAndReportMap = patientTestHistoryAndReportMap;
 	}
 
 	@Override

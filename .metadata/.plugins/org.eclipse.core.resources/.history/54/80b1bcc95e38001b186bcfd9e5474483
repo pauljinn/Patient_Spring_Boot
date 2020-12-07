@@ -1,0 +1,202 @@
+package com.cg.patient.controller;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.assertj.core.util.Arrays;
+import org.hibernate.boot.archive.scan.spi.PackageInfoArchiveEntryHandler;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.validation.BindingResult;
+
+import com.cg.patient.domain.Patient;
+import com.cg.patient.exception.PatientException;
+import com.cg.patient.service.MapValidationErrorService;
+import com.cg.patient.service.PatientService;
+import com.cg.patient.web.PatientController;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.spy;
+
+
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(controllers = PatientController.class)
+@AutoConfigureMockMvc
+class PatientControllerTest {
+	
+	@Autowired
+	MockMvc mockMvc;
+	
+	@MockBean
+	PatientService patientService;
+	
+	@MockBean
+	MapValidationErrorService mapValidationErrorService;
+	
+	@InjectMocks
+	PatientController patientController;
+	
+	@Test
+	void test1_getPatientById() throws Exception {
+		BDDMockito.given(patientService.findPatientByPatientIdentifier("PA01")).willReturn(new Patient("PA01","Aman",23,9883L,"XYZ"));
+		mockMvc.perform(get("/api/patients/PA01"))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$").isMap())
+		.andExpect(jsonPath("patientName").value("Aman"))
+		.andExpect(jsonPath("patientIdentifier").value("PA01"))
+		.andExpect(jsonPath("patientAge").value(23))
+		.andExpect(jsonPath("phoneNumber").value(9883L));
+	}
+	
+	@Test
+	void test2_getPatientById() throws Exception {
+		BDDMockito.given(patientService.findPatientByPatientIdentifier("PA01")).willThrow(new PatientException());
+		mockMvc.perform(get("/api/patients/PA01"))
+		.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	void test1_deletePatient() throws Exception{
+		BDDMockito.given(patientService.deletePatientByPatientIdentifier(Mockito.anyString())).willReturn(true);
+		mockMvc.perform(delete("/api/patients/PA01"))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$").isString())
+		.andExpect(jsonPath("$").value("Patient with Id : PA01 Deleted!"));
+	}
+	
+	@Test
+	void test2_deletePatient() throws Exception{
+		BDDMockito.given(patientService.deletePatientByPatientIdentifier(Mockito.anyString())).willThrow(new PatientException());
+		mockMvc.perform(delete("/api/patients/PA01"))
+		.andExpect(status().isBadRequest());
+	}
+	
+	
+	@Test
+	void test_createNewPatient() throws Exception{
+		BindingResult result=null;
+		BDDMockito.given(mapValidationErrorService.mapValidationError(result)).willReturn(null);
+		Patient patient = new Patient("PA01","Aman",23,9883L,"XYZ");
+		BDDMockito.given(patientService.saveOrUpdate(Mockito.any())).willReturn(patient);
+		ObjectMapper objectMapper = new ObjectMapper();
+		String inputJson = objectMapper.writeValueAsString(patient);
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/patients")
+		         .contentType(MediaType.APPLICATION_JSON_VALUE)
+		         .content(inputJson))
+				 .andExpect(status().isCreated())
+				 .andExpect(jsonPath("$").isMap())
+				 .andExpect(jsonPath("patientName").value("Aman"))
+				 .andExpect(jsonPath("patientIdentifier").value("PA01"))
+				 .andExpect(jsonPath("patientAge").value(23))
+				 .andExpect(jsonPath("phoneNumber").value(9883L));
+	}
+	
+	@Test
+	void test_findAll() throws Exception{
+		Iterable<Patient> patientList = (Iterable<Patient>)(Object)Arrays.asList(new Patient[] {new Patient("PA01","Aman",23,9883L,"XYZ")});
+		BDDMockito.given(patientService.findAllPatients()).willReturn(patientList);
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/patients/all"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.*",hasSize(1)))
+				.andExpect(jsonPath("$[0].patientName", is("Aman")))
+				.andExpect(jsonPath("$[0].patientAge",is(23)))
+				.andExpect(jsonPath("$[0].phoneNumber",is(9883)))
+				.andExpect(jsonPath("$[0].patientAddress",is("XYZ")))
+				.andExpect(jsonPath("$[0].patientIdentifier",is("PA01")));
+	}
+	
+	@Test
+	void test_uploadPrescriptionCopy() throws Exception{
+		BDDMockito.given(patientService.findPatientByPatientIdentifier("PA01")).willReturn(new Patient("PA01","Aman",23,9883L,"XYZ"));
+		Patient patientWithPrescription = new Patient("PA01","Aman",23,9883L,"XYZ");
+		patientWithPrescription.setPrescription("ABC");
+		BDDMockito.given(patientService.saveOrUpdate(Mockito.any())).willReturn(patientWithPrescription);
+		ObjectMapper objectMapper = new ObjectMapper();
+		String inputJson = objectMapper.writeValueAsString(patientWithPrescription);
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/patients/uploadPrescription/PA01")
+		.contentType(MediaType.APPLICATION_JSON_VALUE)
+        .content(inputJson))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$").isMap())
+		.andExpect(jsonPath("patientName").value("Aman"))
+		.andExpect(jsonPath("patientIdentifier").value("PA01"))
+		.andExpect(jsonPath("patientAge").value(23))
+		.andExpect(jsonPath("phoneNumber").value(9883L))
+		.andExpect(jsonPath("prescription").value("ABC"));
+	}
+	
+	@Test
+	void test_uploadMedicalHistory() throws Exception{
+		BDDMockito.given(patientService.findPatientByPatientIdentifier("PA01")).willReturn(new Patient("PA01","Aman",23,9883L,"XYZ"));
+		Patient patientWithMedicalHistory = new Patient("PA01","Aman",23,9883L,"XYZ");
+		patientWithMedicalHistory.setMedicalHistory("Had Cancer");
+		BDDMockito.given(patientService.saveOrUpdate(Mockito.any())).willReturn(patientWithMedicalHistory);
+		ObjectMapper objectMapper = new ObjectMapper();
+		String inputJson = objectMapper.writeValueAsString(patientWithMedicalHistory);
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/patients/uploadMedicalHistory/PA01")
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+		        .content(inputJson))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isMap())
+				.andExpect(jsonPath("patientName").value("Aman"))
+				.andExpect(jsonPath("patientIdentifier").value("PA01"))
+				.andExpect(jsonPath("patientAge").value(23))
+				.andExpect(jsonPath("phoneNumber").value(9883L))
+				.andExpect(jsonPath("medicalHistory").value("Had Cancer"));
+	}
+	
+	@Test
+	void test1_viewMedicalHistory() throws Exception{
+		BDDMockito.given(patientService.findPatientByPatientIdentifier("PA01")).willReturn(new Patient("PA01","Aman",23,9883L,"XYZ"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/patients/viewMedicalHistory/PA01"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$").isString())
+				.andExpect(jsonPath("$").value("No medical history available"));
+	}
+	
+	@Test
+	void test2_viewMedicalHistory() throws Exception{
+		Patient patient = new Patient("PA01","Aman",23,9883L,"XYZ");
+		patient.setMedicalHistory("Had Cancer");
+		BDDMockito.given(patientService.findPatientByPatientIdentifier("PA01")).willReturn(patient);
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/patients/viewMedicalHistory/PA01"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isString())
+				.andExpect(jsonPath("$").value("Had Cancer"));
+	}
+	
+	@Test
+	void test_searchMedicalStore() throws Exception{
+		BDDMockito.given(patientService.findByMedicine(Mockito.anyObject(),"dispirn")).willReturn(true);
+		Map<String,String> medicineMap = new HashMap<>();
+		medicineMap.put("medicineName","dispirin");
+		//System.out.println(patientController.searchMedicalStore(medicineMap));
+		ObjectMapper objectMapper = new ObjectMapper();
+		String inputJson = objectMapper.writeValueAsString(medicineMap);
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/patients/searchMedicalStore")
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.content(inputJson))
+			.andExpect(status().isOk());
+	}
+	
+	
+	
+}

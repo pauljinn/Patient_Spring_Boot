@@ -1,0 +1,64 @@
+package com.cg.patient.service;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cg.patient.domain.MedicalStore;
+import com.cg.patient.domain.Patient;
+import com.cg.patient.exception.PatientException;
+import com.cg.patient.repository.PatientRepository;
+
+@Service
+public class PatientService {
+	
+	
+	
+	@Autowired
+	PatientRepository patientRepository;
+	
+	public Patient saveOrUpdate(Patient patient) {
+
+		try {
+			patient.setPatientIdentifier(patient.getPatientIdentifier().toUpperCase());
+			return patientRepository.save(patient);
+		} catch (Exception e) {
+			throw new PatientException("PatientIdentifier " + patient.getPatientIdentifier() + " already available");
+		}
+
+	}
+	
+	public Iterable<Patient> findAllPatients(){
+		return patientRepository.findAll();
+		
+	}
+	
+	public Patient findPatientByPatientIdentifier(String patientIdentifier) {
+		Patient patient = patientRepository.findByPatientIdentifier(patientIdentifier.toUpperCase());
+		if (patient == null) {
+			throw new PatientException("Patient Identifier " + patientIdentifier + " not available");
+			
+		}
+		return patient;
+
+	}
+	
+	public void deletePatientByPatientIdentifier(String patientIdentifier) {
+		Patient patient = findPatientByPatientIdentifier(patientIdentifier.toUpperCase());
+		if(patient==null) {
+			throw new PatientException("ProjectIdentifier " + patientIdentifier + " not available");
+		}
+		patientRepository.delete(patient);
+	}
+	
+	public boolean findByMedicine(MedicalStore medicalStore,String medicineName) {
+		String[] availableMedicine = medicalStore.getMedicineList();
+		for(String med:availableMedicine) {
+			if(med.equalsIgnoreCase(medicineName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+}

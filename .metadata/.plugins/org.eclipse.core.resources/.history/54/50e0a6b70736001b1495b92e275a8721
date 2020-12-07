@@ -1,0 +1,138 @@
+package com.cg.patient.domain;
+
+import java.util.HashMap;
+
+/**
+ * Creates a replica of medical store with different information like medicine available, chemist name etc.
+ * @author Aman Soni
+ *
+ */
+public class MedicalStore {
+	/**
+	 * Name of the medical store.
+	 */
+	private String medicalStoreName;
+	/**
+	 * Phone number of the medical store.
+	 */
+	private long phoneNumber;
+	/**
+	 * Address of the medical store.
+	 */
+	private String address;
+	/**
+	 * List of medicines available in medical store.
+	 */
+	public String[] medicineList;
+	/**
+	 * Name of the chemist handling medical store.
+	 */
+	private String chemistName;
+	
+	private Map<String,String> orderMap;
+	
+	public MedicalStore() {
+		super();
+	}
+	/**
+	 * Create an instance of medical store with given parameters.
+	 * @param medicalStoreName
+	 * @param phoneNumber
+	 * @param address
+	 * @param medicineList
+	 * @param chemistName
+	 */
+	public MedicalStore(String medicalStoreName, long phoneNumber, String address, String[] medicineList,
+			String chemistName) {
+		super();
+		this.medicalStoreName = medicalStoreName;
+		this.phoneNumber = phoneNumber;
+		this.address = address;
+		this.medicineList = medicineList;
+		this.chemistName = chemistName;
+	}
+	
+	/**
+	 * @return the name of the medical store.
+	 */
+	public String getMedicalStoreName() {
+		return medicalStoreName;
+	}
+	
+	/**
+	 * Set the name of the medical store.
+	 * @param medicalStoreName
+	 */
+	public void setMedicalStoreName(String medicalStoreName) {
+		this.medicalStoreName = medicalStoreName;
+	}
+	
+	/**
+	 * @return the phone number of medical store.
+	 */
+	public long getPhoneNumber() {
+		return phoneNumber;
+	}
+	
+	/**
+	 * Set the phone number of the medical store.
+	 * @param phoneNumber
+	 */
+	public void setPhoneNumber(long phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+	
+	/**
+	 * @return the address of the medical store.
+	 */
+	public String getAddress() {
+		return address;
+	}
+	
+	/**
+	 * Set the address of the medical store.
+	 * @param address
+	 */
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	/**
+	 * @return the list of medicine available in medical store.
+	 */
+	public String[] getMedicineList() {
+		return medicineList;
+	}
+	
+	/**
+	 * Set all the medicine available in medical store.
+	 * @param medicineList
+	 */
+	public void setMedicineList(String[] medicineList) {
+		this.medicineList = medicineList;
+	}
+	
+	/**
+	 * @return the chemist name of the medical store.
+	 */
+	public String getChemistName() {
+		return chemistName;
+	}
+
+	/**
+	 * Set the chemist name of the medical store.
+	 * @param chemistName
+	 */
+	public void setChemistName(String chemistName) {
+		this.chemistName = chemistName;
+	}
+	@Override
+	public String toString() {
+		return "MedicalStore [medicalStoreName=" + medicalStoreName + ", phoneNumber=" + phoneNumber + ", address="
+				+ address + ", chemistName=" + chemistName + "]";
+	}
+	
+	
+}
+
+

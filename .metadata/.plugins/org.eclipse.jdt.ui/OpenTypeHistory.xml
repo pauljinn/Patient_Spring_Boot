@@ -1,5 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<typeInfoHistroy>
-    <typeInfo handle="=Patient/C:\/Users\/Aman Soni\/.m2\/repository\/org\/springframework\/data\/spring-data-jpa\/2.4.1\/spring-data-jpa-2.4.1.jar=/maven.pomderived=/true=/=/maven.pomderived=/true=/=/maven.groupId=/org.springframework.data=/=/maven.artifactId=/spring-data-jpa=/=/maven.version=/2.4.1=/=/maven.scope=/compile=/&lt;org.springframework.data.jpa.repository(JpaRepository.class[JpaRepository" modifiers="1537" timestamp="1606217814067"/>
-    <typeInfo handle="=Patient/C:\/Users\/Aman Soni\/.m2\/repository\/org\/springframework\/spring-webmvc\/5.3.1\/spring-webmvc-5.3.1.jar=/maven.pomderived=/true=/=/maven.pomderived=/true=/=/maven.groupId=/org.springframework=/=/maven.artifactId=/spring-webmvc=/=/maven.version=/5.3.1=/=/maven.scope=/compile=/&lt;org.springframework.web.servlet.mvc.method.annotation(ResponseEntityExceptionHandler.class[ResponseEntityExceptionHandler" modifiers="1057" timestamp="1606214155832"/>
-</typeInfoHistroy>
+<typeInfoHistroy/>
